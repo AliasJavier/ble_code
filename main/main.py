@@ -8,7 +8,7 @@ def download_and_install_update_if_available():
     ota_updater.check_for_update_to_install_during_next_reboot()
 
 def start():
-   print("DOOOoa")
+   print("DOOOoaaa")
 
 def boot():
     download_and_install_update_if_available()
