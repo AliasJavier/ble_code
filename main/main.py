@@ -7,7 +7,7 @@ def download_and_install_update_if_available():
     ota_updater.download_and_install_update_if_available('Acciona Innovacion', 'Innovacion_IoT')
 
 def start():
-   print("DOOOOloo")
+   print("DOOOOo")
 
 def boot():
     download_and_install_update_if_available()
