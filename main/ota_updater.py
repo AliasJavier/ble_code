@@ -14,7 +14,7 @@ class OTAUpdater:
         self.github_repo = github_repo.rstrip('/').replace('https://github.com', 'https://api.github.com/repos')
         self.main_dir = main_dir
         self.module = module.rstrip('/')
-
+        
     @staticmethod
     def using_network(ssid, password):
         import network
