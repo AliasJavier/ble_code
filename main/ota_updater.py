@@ -80,7 +80,7 @@ class OTAUpdater:
         current_version='1.0'
         latest_version = self.get_latest_version()
 
-        print('Checking version... ')
+        print('Checking version.. ')
         print('\tCurrent version: ', current_version)
         print('\tLatest version: ', latest_version)
         if latest_version > current_version:
