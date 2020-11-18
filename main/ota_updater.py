@@ -123,7 +123,7 @@ class OTAUpdater:
         for file in file_list.json():
             if file['type'] == 'file':
                 download_url = file['download_url']
-                download_path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
+                download_path = self.modulepath('main/' + file['path'].replace(self.main_dir + '/', ''))
                 self.download_file(download_url.replace('refs/tags/', ''), download_path)
             elif file['type'] == 'dir':
                 path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
