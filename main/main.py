@@ -17,8 +17,8 @@ def do_connect(): #Funcion para conectarse al wifi
 
 def download_and_install_update_if_available():
     ota_updater = OTAUpdater('https://github.com/AliasJavier/ble_code')
-    ota_updater.download_and_install_update_if_available('Acciona Innovacion', 'Innovacion_IoT')
     ota_updater.check_for_update_to_install_during_next_reboot()
+    ota_updater.download_and_install_update_if_available('Acciona Innovacion', 'Innovacion_IoT')
 
 def start():
    print("Se ha descargado bien je")
