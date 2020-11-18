@@ -1,6 +1,19 @@
 import machine
 from ota_updater import OTAUpdater
 
+def do_connect(): #Funcion para conectarse al wifi
+    import network
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    if not wlan.isconnected():
+        print('connecting to network...')
+        wlan.connect('Acciona Innovacion', 'Innovacion_IoT')
+        while not wlan.isconnected():
+            pass
+    else:
+        print('connected')
+    print('network config:', wlan.ifconfig())
+
 
 def download_and_install_update_if_available():
     ota_updater = OTAUpdater('https://github.com/AliasJavier/ble_code.git')
@@ -14,7 +27,7 @@ def boot():
     download_and_install_update_if_available()
     start()
 
-
+do_connect()
 boot()
 
 
