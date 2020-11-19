@@ -29,6 +29,7 @@ class OTAUpdater:
 
     def check_for_update_to_install_during_next_reboot(self):
         current_version = self.get_version(self.modulepath(self.main_dir))
+        #current_version = '1.0'
         latest_version = self.get_latest_version()
 
         print('Checking version... ')
@@ -76,8 +77,8 @@ class OTAUpdater:
             print('No pending update found')
 
     def download_updates_if_available(self):
-        #current_version = self.get_version(self.modulepath(self.main_dir))
-        current_version='1.0'
+        current_version = self.get_version(self.modulepath(self.main_dir))
+
         latest_version = self.get_latest_version()
 
         print('Checking version.. ')
