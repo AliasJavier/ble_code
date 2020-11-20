@@ -14,7 +14,7 @@ class OTAUpdater:
         self.github_repo = github_repo.rstrip('/').replace('https://github.com', 'https://api.github.com/repos')
         self.main_dir = main_dir
         self.module = module.rstrip('/')
-        
+
     @staticmethod
     def using_network(ssid, password):
         import network
@@ -28,8 +28,14 @@ class OTAUpdater:
         print('network config:', sta_if.ifconfig())
 
     def check_for_update_to_install_during_next_reboot(self):
+        #current_version = self.get_version(self.modulepath(self.main_dir))
+        directory = self.modulepath(self.main_dir)
+        f = open(directory + '/' + '.version', 'w')
+        f.write('1.4')
+        f.close()
         current_version = self.get_version(self.modulepath(self.main_dir))
-        #current_version = '1.0'
+
+        # current_version = '1.0'
         latest_version = self.get_latest_version()
 
         print('Checking version... ')
@@ -53,7 +59,7 @@ class OTAUpdater:
             print('No new updates found...')
 
     def _download_and_install_update(self, latest_version, ssid, password):
-        #OTAUpdater.using_network(ssid, password)
+        # OTAUpdater.using_network(ssid, password)
 
         self.download_all_files(self.github_repo + '/contents/' + self.main_dir, latest_version)
         self.rmtree(self.modulepath(self.main_dir))
@@ -122,10 +128,14 @@ class OTAUpdater:
 
     def download_all_files(self, root_url, version):
         file_list = self.http_client.get(root_url + '?ref=refs/tags/' + version)
+        print(self.main_dir)
+        print(root_url + '?ref=refs/tags/' + version)
         for file in file_list.json():
             if file['type'] == 'file':
                 download_url = file['download_url']
-                download_path = self.modulepath('main/' + file['path'].replace(self.main_dir + '/', ''))
+                #download_path = self.modulepath('main/' + file['path'].replace(self.main_dir + '/', ''))
+                download_path = self.modulepath(file['path'].replace(self.main_dir + '/', ''))
+                print(download_path)
                 self.download_file(download_url.replace('refs/tags/', ''), download_path)
             elif file['type'] == 'dir':
                 path = self.modulepath('next/' + file['path'].replace(self.main_dir + '/', ''))
@@ -139,6 +149,7 @@ class OTAUpdater:
         with open(path, 'w') as outfile:
             try:
                 response = self.http_client.get(url)
+                print(response.text)
                 outfile.write(response.text)
             finally:
                 response.close()
