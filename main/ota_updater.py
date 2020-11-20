@@ -28,11 +28,16 @@ class OTAUpdater:
         print('network config:', sta_if.ifconfig())
 
     def check_for_update_to_install_during_next_reboot(self):
-        #current_version = self.get_version(self.modulepath(self.main_dir))
-        directory = self.modulepath(self.main_dir)
-        f = open(directory + '/' + '.version', 'w')
-        f.write('1.4')
-        f.close()
+        current_version = self.get_version(self.modulepath(self.main_dir))
+        #directory = self.modulepath(self.main_dir)
+        #maino = self.module
+        #abrir = open(maino + '/main.py','r')
+        #mostrar = abrir.read()
+        #rint(mostrar)
+        #abrir.close()
+        #f = open(directory + '/' + '.version', 'w')
+        #f.write('1.4')
+        #f.close()
         current_version = self.get_version(self.modulepath(self.main_dir))
 
         # current_version = '1.0'
@@ -146,11 +151,15 @@ class OTAUpdater:
 
     def download_file(self, url, path):
         print('\tDownloading: ', path)
-        with open(path, 'w') as outfile:
+        with open(self.module + '/' + path, 'w') as outfile:
             try:
                 response = self.http_client.get(url)
                 #print(response.text)
                 outfile.write(response.text)
+                #print(outfile.read())
+                maino = self.module
+                abrir = open(maino + '/main.py','r')
+                mostrar = abrir.read()
             finally:
                 response.close()
                 outfile.close()
