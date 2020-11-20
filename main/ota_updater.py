@@ -149,7 +149,7 @@ class OTAUpdater:
         with open(path, 'w') as outfile:
             try:
                 response = self.http_client.get(url)
-                print(response.text)
+                #print(response.text)
                 outfile.write(response.text)
             finally:
                 response.close()
