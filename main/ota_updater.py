@@ -61,6 +61,7 @@ class OTAUpdater:
             with open(self.modulepath('next/.version_on_reboot'), 'w') as versionfile:
                 versionfile.write(latest_version)
                 versionfile.close()
+            return True
 
     def download_and_install_update_if_available(self, ssid, password):
         if 'next' in os.listdir(self.module):
