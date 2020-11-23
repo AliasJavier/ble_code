@@ -1,4 +1,4 @@
-import machine
+from machine import WDT
 from ota_updater import OTAUpdater
 from sniffers import beacon_scanner
 
@@ -30,6 +30,8 @@ def start():
 def boot():
     download_and_install_update_if_available()
     start()
+
+
 
 do_connect()
 boot()

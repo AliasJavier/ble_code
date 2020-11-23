@@ -36,7 +36,7 @@ class beacon_scanner:
           print("REINICIO\n")
 
 
-        self.wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
+        self.wdt= WDT(timeout=1200000) #Watchdog configurado para que si no se alimenta en 1200 seg (20 min)realimente
         self.p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
 
         self.mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
@@ -111,6 +111,7 @@ class beacon_scanner:
               #print("addr_type", "PUBLIC" if addr_type == 0 else "RANDOM",
                #    "addr", addr, "adv_type",adv_type,"rssi", rssi,
                 #  "adv_data", adv_data )
+            if 1 == 0:
               self.wdt.feed()
 
 
