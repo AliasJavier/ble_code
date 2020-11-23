@@ -181,7 +181,7 @@ class beacon_scanner:
             conn_handle, mtu = data
 
     def run(self):
-        self.do_connect()
+        #self.do_connect()
 
         self.bt.active(True)
         self.bt.irq(handler=bt_irq)

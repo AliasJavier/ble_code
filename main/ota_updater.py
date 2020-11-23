@@ -227,11 +227,13 @@ class HttpClient:
         if ':' in host:
             host, port = host.split(':', 1)
             port = int(port)
+        try:
+            ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
+            ai = ai[0]
 
-        ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
-        ai = ai[0]
-
-        s = usocket.socket(ai[0], ai[1], ai[2])
+            s = usocket.socket(ai[0], ai[1], ai[2])
+        except OSError:
+            machine.reset()
         try:
             s.connect(ai[-1])
             if proto == 'https:':
