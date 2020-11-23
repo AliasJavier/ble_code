@@ -29,7 +29,7 @@ _IRQ_GATTS_INDICATE_DONE = const(20)
 _IRQ_MTU_EXCHANGED = const(21)
 
 class beacon_scanner:
-    def __init__(self, f):
+    def __init__(self):
         a=0
         while a<=10:
           a=a+1
