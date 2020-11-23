@@ -191,6 +191,8 @@ class beacon_scanner:
           time.sleep(5)
           if(self.ota_updater.check_for_update_to_install_during_next_reboot()):
               reset()
+          else:
+              print("No existen actualizaciones")
           if len(self.lista_id) >= 1:
                     url = "http://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/"
                     data = self.mac + '\n'
