@@ -5,49 +5,56 @@ import ubinascii
 from micropython import const
 import urequests as requests
 from machine import Pin, WDT
-def beacon_scanner():
-    a=0
-    while a<=10:
-      a=a+1
-      print("REINICIO\n")
-    _IRQ_CENTRAL_CONNECT = const(1)
-    _IRQ_CENTRAL_DISCONNECT = const(2)
-    _IRQ_GATTS_WRITE = const(3)
-    _IRQ_GATTS_READ_REQUEST = const(4)
-    _IRQ_SCAN_RESULT = const(5)
-    _IRQ_SCAN_DONE = const(6)
-    _IRQ_PERIPHERAL_CONNECT = const(7)
-    _IRQ_PERIPHERAL_DISCONNECT = const(8)
-    _IRQ_GATTC_SERVICE_RESULT = const(9)
-    _IRQ_GATTC_SERVICE_DONE = const(10)
-    _IRQ_GATTC_CHARACTERISTIC_RESULT = const(11)
-    _IRQ_GATTC_CHARACTERISTIC_DONE = const(12)
-    _IRQ_GATTC_DESCRIPTOR_RESULT = const(13)
-    _IRQ_GATTC_DESCRIPTOR_DONE = const(14)
-    _IRQ_GATTC_READ_RESULT = const(15)
-    _IRQ_GATTC_READ_DONE = const(16)
-    _IRQ_GATTC_WRITE_DONE = const(17)
-    _IRQ_GATTC_NOTIFY = const(18)
-    _IRQ_GATTC_INDICATE = const(19)
-    _IRQ_GATTS_INDICATE_DONE = const(20)
-    _IRQ_MTU_EXCHANGED = const(21)
 
-    wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
-    p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
+_IRQ_CENTRAL_CONNECT = const(1)
+_IRQ_CENTRAL_DISCONNECT = const(2)
+_IRQ_GATTS_WRITE = const(3)
+_IRQ_GATTS_READ_REQUEST = const(4)
+_IRQ_SCAN_RESULT = const(5)
+_IRQ_SCAN_DONE = const(6)
+_IRQ_PERIPHERAL_CONNECT = const(7)
+_IRQ_PERIPHERAL_DISCONNECT = const(8)
+_IRQ_GATTC_SERVICE_RESULT = const(9)
+_IRQ_GATTC_SERVICE_DONE = const(10)
+_IRQ_GATTC_CHARACTERISTIC_RESULT = const(11)
+_IRQ_GATTC_CHARACTERISTIC_DONE = const(12)
+_IRQ_GATTC_DESCRIPTOR_RESULT = const(13)
+_IRQ_GATTC_DESCRIPTOR_DONE = const(14)
+_IRQ_GATTC_READ_RESULT = const(15)
+_IRQ_GATTC_READ_DONE = const(16)
+_IRQ_GATTC_WRITE_DONE = const(17)
+_IRQ_GATTC_NOTIFY = const(18)
+_IRQ_GATTC_INDICATE = const(19)
+_IRQ_GATTS_INDICATE_DONE = const(20)
+_IRQ_MTU_EXCHANGED = const(21)
 
-    mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
-    print("Esto es la mac:",mac)
+class beacon_scanner:
+    def __init__(self, f):
+        a=0
+        while a<=10:
+          a=a+1
+          print("REINICIO\n")
 
-    lista_id=[]
-    lista_rssi=[]
 
-    def filtro(data):
+        self.wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
+        p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
+
+        mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+        print("Esto es la mac:",mac)
+
+        # Scan for 10s (at 100% duty cycle)
+        self.bt = BLE()
+
+        self.lista_id=[]
+        self.lista_rssi=[]
+
+    def filtro(self, data):
         if "0201061aff4c000215" in data: #Filtramos los dispositivos deseados a partir de su mac
           return True
         else:
             return False
 
-    def adv_decode(adv_type, data):
+    def adv_decode(self, adv_type, data):
         i = 0
         while i + 1 < len(data):
             if data[i + 1] == adv_type:
@@ -55,13 +62,12 @@ def beacon_scanner():
             i += 1 + data[i]
         return None
 
-    def adv_decode_name(data):
-        n = adv_decode(0x09, data)
+    def adv_decode_name(self, data):
+        n = self.adv_decode(0x09, data)
         if n:
             return n.decode('utf-8')
         return data
-    def do_connect(): #Funcion para conectarse al wifi
-        import network
+    def do_connect(self): #Funcion para conectarse al wifi
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
         if not wlan.isconnected():
@@ -71,8 +77,8 @@ def beacon_scanner():
                 pass
         print('network config:', wlan.ifconfig())
 
-    def bt_irq(event, data):
-        global lista_id
+    def bt_irq(self, event, data):
+
         #i=0
         if event == _IRQ_CENTRAL_CONNECT:
             # A central has connected to this peripheral.
@@ -94,10 +100,10 @@ def beacon_scanner():
 
             addr = ubinascii.hexlify(addr)
             adv_data = ubinascii.hexlify(adv_data)
-            if filtro(adv_data) == True:
+            if self.filtro(adv_data) == True:
             #if filtro(addr) == True:  #Introducimos la mac para el filtro
 
-              lista_id.append({"addr": addr, "rssi": rssi})
+              self.lista_id.append({"addr": addr, "rssi": rssi})
 
               #= urequests.post("https://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/",
 
@@ -105,7 +111,7 @@ def beacon_scanner():
               #print("addr_type", "PUBLIC" if addr_type == 0 else "RANDOM",
                #    "addr", addr, "adv_type",adv_type,"rssi", rssi,
                 #  "adv_data", adv_data )
-              wdt.feed()
+              self.wdt.feed()
 
 
 
@@ -173,34 +179,34 @@ def beacon_scanner():
         elif event == _IRQ_MTU_EXCHANGED:
             # MTU exchange complete (either initiated by us or the remote device).
             conn_handle, mtu = data
-    do_connect()
 
-    # Scan for 10s (at 100% duty cycle)
-    bt = BLE()
-    bt.active(True)
-    bt.irq(handler=bt_irq)
-    while p13.value() != 1:
-      bt.gap_scan(1000, 30000, 30000) #Escaneo total 1000 ms, cada 30000 us escanea, y escanea durante 30000 us
-      time.sleep(5)
-      if len(lista_id) >= 1:
-                url = "http://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/"
-                data = mac + '\n'
-                for elemento in lista_id:
-                  data = data + elemento['addr'].decode("utf-8")  + "," #Lo ponemos en el formato deseado
-                  data = data + str(elemento['rssi']) +"\n"
+    def run(self):
+        self.do_connect()
 
-                print(data)
-                header_data = { "content-type": 'text/plain'}
-                try: #Comprueba si puede enviar por wifi
-                  r = requests.post(url, data=data, headers = header_data)
-                  results = r.text
-                  print(results)
-                  lista_id= []
-                except: #En caso de no estar conectado lo forzamos a reconectarse
-                  do_connect
+        self.bt.active(True)
+        self.bt.irq(handler=bt_irq)
+        while p13.value() != 1:
+          self.bt.gap_scan(1000, 30000, 30000) #Escaneo total 1000 ms, cada 30000 us escanea, y escanea durante 30000 us
+          time.sleep(5)
+          if len(self.lista_id) >= 1:
+                    url = "http://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/"
+                    data = mac + '\n'
+                    for elemento in self.lista_id:
+                      data = data + elemento['addr'].decode("utf-8")  + "," #Lo ponemos en el formato deseado
+                      data = data + str(elemento['rssi']) +"\n"
 
-    #bt.gap_connect(0, b'\xf4^\xab\x91k\x97', 2000)
-    #bt.gattc_discover_services(0)
+                    print(data)
+                    header_data = { "content-type": 'text/plain'}
+                    try: #Comprueba si puede enviar por wifi
+                      r = requests.post(url, data=data, headers = header_data)
+                      results = r.text
+                      print(results)
+                      self.lista_id= []
+                    except: #En caso de no estar conectado lo forzamos a reconectarse
+                      self.do_connect()
+
+        #bt.gap_connect(0, b'\xf4^\xab\x91k\x97', 2000)
+        #bt.gattc_discover_services(0)
 
 
 

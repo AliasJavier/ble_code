@@ -23,7 +23,8 @@ def download_and_install_update_if_available():
 
 def start():
    scanner = beacon_scanner()
-   scanner()
+
+   scanner.run()
 
 
 
