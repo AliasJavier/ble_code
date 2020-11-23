@@ -21,7 +21,7 @@ def download_and_install_update_if_available():
     ota_updater.download_and_install_update_if_available('Acciona Innovacion', 'Innovacion_IoT')
 
 def start():
-   print("Empezamos.")
+   beacon_scaner()
 
 
 def boot():
@@ -30,6 +30,7 @@ def boot():
 
 do_connect()
 boot()
+
 
 
 
