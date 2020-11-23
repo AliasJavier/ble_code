@@ -4,8 +4,7 @@ from ubluetooth import BLE, UUID, FLAG_NOTIFY, FLAG_READ, FLAG_WRITE
 import ubinascii
 from micropython import const
 import urequests as requests
-from machine import Pin, WDT, reset
-from ota_updater import OTAUpdater
+from machine import Pin, WDT
 
 _IRQ_CENTRAL_CONNECT = const(1)
 _IRQ_CENTRAL_DISCONNECT = const(2)
@@ -35,8 +34,8 @@ class beacon_scanner:
         while a<=10:
           a=a+1
           print("REINICIO\n")
-        ota_updater = OTAUpdater('https://github.com/AliasJavier/ble_code')
-        self.check = ota_updater.check_for_update_to_install_during_next_reboot()
+
+
         self.wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
         self.p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
 
@@ -189,10 +188,6 @@ class beacon_scanner:
         while self.p13.value() != 1:
           self.bt.gap_scan(1000, 30000, 30000) #Escaneo total 1000 ms, cada 30000 us escanea, y escanea durante 30000 us
           time.sleep(5)
-          if(self.check()):
-              reset()
-          else:
-              print("No existen actualizaciones")
           if len(self.lista_id) >= 1:
                     url = "http://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/"
                     data = self.mac + '\n'
