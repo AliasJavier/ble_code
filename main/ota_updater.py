@@ -28,7 +28,7 @@ class OTAUpdater:
         print('network config:', sta_if.ifconfig())
 
     def check_for_update_to_install_during_next_reboot(self):
-        current_version = self.get_version(self.modulepath(self.main_dir))
+        #current_version = self.get_version(self.modulepath(self.main_dir))
         #directory = self.modulepath(self.main_dir)
         #maino = self.module
         #abrir = open(maino + '/main.py','r')
