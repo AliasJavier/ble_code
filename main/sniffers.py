@@ -37,10 +37,10 @@ class beacon_scanner:
 
 
         self.wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
-        p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
+        self.p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
 
-        mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
-        print("Esto es la mac:",mac)
+        self.mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+        print("Esto es la mac:",self.mac)
 
         # Scan for 10s (at 100% duty cycle)
         self.bt = BLE()
@@ -184,13 +184,13 @@ class beacon_scanner:
         #self.do_connect()
 
         self.bt.active(True)
-        self.bt.irq(handler=bt_irq)
-        while p13.value() != 1:
+        self.bt.irq(handler=self.bt_irq)
+        while self.p13.value() != 1:
           self.bt.gap_scan(1000, 30000, 30000) #Escaneo total 1000 ms, cada 30000 us escanea, y escanea durante 30000 us
           time.sleep(5)
           if len(self.lista_id) >= 1:
                     url = "http://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/"
-                    data = mac + '\n'
+                    data = self.mac + '\n'
                     for elemento in self.lista_id:
                       data = data + elemento['addr'].decode("utf-8")  + "," #Lo ponemos en el formato deseado
                       data = data + str(elemento['rssi']) +"\n"
