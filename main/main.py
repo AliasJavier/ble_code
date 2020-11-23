@@ -1,5 +1,6 @@
 import machine
 from ota_updater import OTAUpdater
+from sniffers import beacon_scanner
 
 def do_connect(): #Funcion para conectarse al wifi
     import network
@@ -21,7 +22,9 @@ def download_and_install_update_if_available():
     ota_updater.download_and_install_update_if_available('Acciona Innovacion', 'Innovacion_IoT')
 
 def start():
-   beacon_scaner()
+   scanner = beacon_scanner()
+   scanner()
+
 
 
 def boot():
@@ -30,8 +33,5 @@ def boot():
 
 do_connect()
 boot()
-
-
-
 
 

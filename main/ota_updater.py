@@ -47,7 +47,7 @@ class OTAUpdater:
         print('\tCurrent version: ', current_version)
         print('\tLatest version: ', latest_version)
         if latest_version > current_version:
-            print('New version available, will download and install on next reboots')
+            print('New version available.')
             if 'next' not in os.listdir(self.module):
                 os.mkdir(self.modulepath('next'))
             with open(self.modulepath('next/.version_on_reboot'), 'w') as versionfile:

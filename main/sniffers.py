@@ -5,7 +5,7 @@ import ubinascii
 from micropython import const
 import urequests as requests
 from machine import Pin, WDT
-def beacon_scaner():
+def beacon_scanner():
     a=0
     while a<=10:
       a=a+1
