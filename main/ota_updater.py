@@ -33,7 +33,7 @@ class OTAUpdater:
         #maino = self.module
         #abrir = open(maino + '/main.py','r')
         #mostrar = abrir.read()
-        #rint(mostrar)
+        #print(mostrar)
         #abrir.close()
         #f = open(directory + '/' + '.version', 'w')
         #f.write('1.4')
