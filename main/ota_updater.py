@@ -268,24 +268,26 @@ class HttpClient:
             s.write(b'\r\n')
             if data:
                 s.write(data)
-
-            l = s.readline()
-            # print(l)
-            l = l.split(None, 2)
-            status = int(l[1])
-            reason = ''
-            if len(l) > 2:
-                reason = l[2].rstrip()
-            while True:
+            try:
                 l = s.readline()
-                if not l or l == b'\r\n':
-                    break
                 # print(l)
-                if l.startswith(b'Transfer-Encoding:'):
-                    if b'chunked' in l:
-                        raise ValueError('Unsupported ' + l)
-                elif l.startswith(b'Location:') and not 200 <= status <= 299:
-                    raise NotImplementedError('Redirects not yet supported')
+                l = l.split(None, 2)
+                status = int(l[1])
+                reason = ''
+                if len(l) > 2:
+                    reason = l[2].rstrip()
+                while True:
+                    l = s.readline()
+                    if not l or l == b'\r\n':
+                        break
+                    # print(l)
+                    if l.startswith(b'Transfer-Encoding:'):
+                        if b'chunked' in l:
+                            raise ValueError('Unsupported ' + l)
+                    elif l.startswith(b'Location:') and not 200 <= status <= 299:
+                        raise NotImplementedError('Redirects not yet supported')
+            except IndexError:
+                machine.reset()
         except OSError:
             s.close()
             raise
