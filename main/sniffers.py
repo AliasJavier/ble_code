@@ -4,7 +4,7 @@ from ubluetooth import BLE, UUID, FLAG_NOTIFY, FLAG_READ, FLAG_WRITE
 import ubinascii
 from micropython import const
 import urequests as requests
-from machine import Pin, WDT
+from machine import Pin, WDT, Timer, reset
 
 _IRQ_CENTRAL_CONNECT = const(1)
 _IRQ_CENTRAL_DISCONNECT = const(2)
@@ -28,6 +28,12 @@ _IRQ_GATTC_INDICATE = const(19)
 _IRQ_GATTS_INDICATE_DONE = const(20)
 _IRQ_MTU_EXCHANGED = const(21)
 
+
+def handleInterrupt(timer):
+    print('REINICIO EN MARCHA')
+    reset()
+
+
 class beacon_scanner:
     def __init__(self):
         a=0
@@ -35,8 +41,9 @@ class beacon_scanner:
           a=a+1
           print("REINICIO\n")
 
-
-        self.wdt= WDT(timeout=1200000) #Watchdog configurado para que si no se alimenta en 1200 seg (20 min)realimente
+        self.timer = Timer(0)
+        self.timer.init(period=1200000, mode=Timer.PERIODIC, callback=handleInterrupt) #Reset cada 20 mins
+        self.wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
         self.p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
 
         self.mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
@@ -47,6 +54,7 @@ class beacon_scanner:
 
         self.lista_id=[]
         self.lista_rssi=[]
+
 
     def filtro(self, data):
         if "0201061aff4c000215" in data: #Filtramos los dispositivos deseados a partir de su mac
@@ -111,7 +119,7 @@ class beacon_scanner:
               #print("addr_type", "PUBLIC" if addr_type == 0 else "RANDOM",
                #    "addr", addr, "adv_type",adv_type,"rssi", rssi,
                 #  "adv_data", adv_data )
-            if 1 == 0:
+
               self.wdt.feed()
 
 
