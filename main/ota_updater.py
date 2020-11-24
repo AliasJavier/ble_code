@@ -37,6 +37,7 @@ class OTAUpdater:
                 versionfile.write('1.0')
                 versionfile.close()
             current_version = self.get_version(self.modulepath(self.main_dir))
+
         #directory = self.modulepath(self.main_dir)
         #maino = self.module
         #abrir = open(maino + '/main.py','r')
@@ -175,7 +176,9 @@ class OTAUpdater:
 
     def modulepath(self, path):
         return self.module + '/' + path if self.module else path
-
+    def version(self):
+        version = self.get_version(self.modulepath(self.main_dir))
+        return version
 
 class Response:
 

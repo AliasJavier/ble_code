@@ -5,6 +5,7 @@ import ubinascii
 from micropython import const
 import urequests as requests
 from machine import Pin, WDT, Timer, reset
+from ota_updater import OTAUpdater
 
 _IRQ_CENTRAL_CONNECT = const(1)
 _IRQ_CENTRAL_DISCONNECT = const(2)
@@ -43,7 +44,7 @@ class beacon_scanner:
 
         self.timer = Timer(0)
         self.timer.init(period=1200000, mode=Timer.PERIODIC, callback=handleInterrupt) #Reset cada 20 mins
-        self.wdt= WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
+        self.wdt = WDT(timeout=100000) #Watchdog configurado para que si no se alimenta en 100 seg realimente
         self.p13 = Pin(13, Pin.IN) #Pin para interrumpir el main
 
         self.mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
@@ -197,12 +198,17 @@ class beacon_scanner:
         while self.p13.value() != 1:
           self.bt.gap_scan(1000, 30000, 30000) #Escaneo total 1000 ms, cada 30000 us escanea, y escanea durante 30000 us
           time.sleep(5)
+          ota_updater = OTAUpdater('https://github.com/AliasJavier/ble_code')
+          current_version = ota_updater.version()
+
           if len(self.lista_id) >= 1:
                     url = "http://innovacion-smartoffice.azurewebsites.net/snifferbluetooth/"
                     data = self.mac + '\n'
+                    data = data + str(current_version) + '\n'
                     for elemento in self.lista_id:
                       data = data + elemento['addr'].decode("utf-8")  + "," #Lo ponemos en el formato deseado
                       data = data + str(elemento['rssi']) +"\n"
+
 
                     print(data)
                     header_data = { "content-type": 'text/plain'}
