@@ -7,6 +7,7 @@ import gc
 import machine
 
 
+
 class OTAUpdater:
 
     def __init__(self, github_repo, module='', main_dir='main', headers={}):
@@ -216,6 +217,7 @@ class HttpClient:
 
     def __init__(self, headers={}):
         self._headers = headers
+        self.wdt = machine.WDT(timeout=50000)
 
     def request(self, method, url, data=None, json=None, headers={}, stream=None):
         def _write_headers(sock, _headers):
@@ -249,6 +251,7 @@ class HttpClient:
             s.connect(ai[-1])
             if proto == 'https:':
                 s = ussl.wrap_socket(s, server_hostname=host)
+            self.wdt.feed()
             s.write(b'%s /%s HTTP/1.0\r\n' % (method, path))
             if not 'Host' in headers:
                 s.write(b'Host: %s\r\n' % host)
@@ -273,7 +276,7 @@ class HttpClient:
                 s.write(data)
             try:
                 l = s.readline()
-                # print(l)
+                #print(l)
                 l = l.split(None, 2)
                 status = int(l[1])
                 reason = ''
@@ -283,7 +286,7 @@ class HttpClient:
                     l = s.readline()
                     if not l or l == b'\r\n':
                         break
-                    # print(l)
+                    #print(l)
                     if l.startswith(b'Transfer-Encoding:'):
                         if b'chunked' in l:
                             raise ValueError('Unsupported ' + l)

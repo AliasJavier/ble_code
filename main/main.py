@@ -1,7 +1,7 @@
-from machine import WDT
+
 from ota_updater import OTAUpdater
 from sniffers import beacon_scanner
-import time
+
 
 def do_connect(): #Funcion para conectarse al wifi
     import network
